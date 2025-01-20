@@ -12,24 +12,24 @@ char	*strjoin(char *line, char *new_buffer)
 	char	*tmp_line;
 
 	i = 0;
-	
-	printf("test join ""%s"" \n", line);
-
+	j = 0;
+	tmp_line = line;
 	while (line[i])
 		i++;
-	j = 0;
 	while (new_buffer[j] && new_buffer[j] != '\n')
 		j++;
-	tmp_line = line;
 	line = malloc (i + j);
 	if (!line)
 		return (NULL);
-	i = 0;
-	while (line[i++])
-		line[i] = tmp_line[i];
+	i = -1;
 	j = 0;
+	while (tmp_line[++i])
+		line[i] = tmp_line[i];
 	while (new_buffer[j] && new_buffer[j] != '\n')
-		line[i + j] = tmp_line[j++];
+	{
+		line[i + j] = new_buffer[j];
+		j++;
+	}
 	free (tmp_line);
 	return (line);
 }
@@ -38,28 +38,34 @@ char	*get_next_line(int fd)
 {
 	static char	*buffer;
 	char		*line;
-	int			len;
 	int			i;
 
+	i = 0;
 	buffer = malloc(BUFFER_SIZE);
-	if (!buffer)
+	line = malloc(BUFFER_SIZE);
+	if (!buffer || !line)
 		return (NULL);
 	read(fd, buffer, BUFFER_SIZE);
-	len = BUFFER_SIZE;
-	strjoin(line, buffer);
-	printf("test ""%s"" test \n", line);
+	line = strjoin(line, buffer);
+	printf("test--%s--test %d\n", line, i);	
 	while(!strchr(buffer, '\n'))
 	{
-		read(fd, buffer, BUFFER_SIZE);
-	    strjoin(line, buffer);
+		printf("---buffer %s---\n", buffer);
+
+		if(read(fd, buffer, BUFFER_SIZE))
+			line = strjoin(line, buffer);
+		printf("---buffer %s---\n", buffer);
+		break;
+		//printf("test--%s--test %d\n", line, i);
 	}
+	printf("---------buffer %s---\n", buffer);
 	return (line);
 }
 int main()
 {
 	int fd= open("test.txt", 'r');
 	char	  *buffer=get_next_line(fd);
-	printf("%s\n", buffer);
+	printf("line  %s-----\n", buffer);
 	//buffer=get_next_line(fd);
-	//printf("buff %s", buffer);
+	//printf("buff %s----\n", buffer);
 }

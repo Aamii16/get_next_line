@@ -1,2 +1,5 @@
-abcdef klaaa
-jjabwykui
+abcd\nabcd\n\0
+
+
+
+abcd\n

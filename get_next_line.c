@@ -5,38 +5,55 @@
 #include <stdlib.h>
 #define BUFFER_SIZE 40
 
-void	*ft_memcpy(void *dst, void *src, int size)
+void	*ft_memcpy(char *d, char *s, size_t size)
 {
-	char	*d;
-	char	*s;
-
-	s = (char *)src;
-	d = (char *)dst;
-	if (!dst || !src)
+	if (!d || !s)
 		return (NULL);
-	while (size-- && *s)
-		*(d++) = *(s++);	
+	while (*s && size--)
+		*(d++) = *(s++);
 	*d = 0;
-	return (dst);
+	return (d);
+}
+
+char	*ft_strchr(const char *s, int n)
+{
+	unsigned char	c;
+
+	if (!s)
+		return (NULL);
+	c = (unsigned char)n;
+	while (*s)
+	{
+		if (*s == c)
+			return ((char *)s);
+		s++;
+	}
+	if (c == *s)
+		return ((char *)s);
+	return (NULL);
 }
 
 char	*strjoin(char *line, char *new_buffer)
 {
+	char	*tmp_line;
 	int		i;
 	int		j;
-	char	*tmp_line;
 
 	i = 0;
 	j = 0;
 	tmp_line = line;
-	while (tmp_line[i])
+	while (tmp_line && tmp_line[i])
 		i++;
 	while (new_buffer[j] && new_buffer[j] != '\n')
 		j++;
-	line = malloc (i + j);
-	ft_memcpy(line, tmp_line, i);
-	ft_memcpy(line + i, new_buffer, j + 1);
-	free(tmp_line);
+	if (new_buffer[0] == '\n')
+		j++;
+	line = malloc(i + j + 1);
+	if (i)
+		ft_memcpy(line, tmp_line, i);
+	free (tmp_line);
+	ft_memcpy(line + i, new_buffer, j);
+	ft_memcpy(new_buffer, new_buffer + j, BUFFER_SIZE);
 	return (line);
 }
 
@@ -45,43 +62,38 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 	int			r;
-	
+
+	r = 0;
 	line = NULL;
 	if (buffer)
 		line = strjoin(strdup(""), buffer);
 	if (!buffer)
 	{
-		buffer = malloc(BUFFER_SIZE + 1);
+		buffer = malloc((long) BUFFER_SIZE + 1);
 		if (!buffer)
 			return (NULL);
+		buffer[0] = 0;
 	}
 	while (1)
 	{
-		if (!(r = read(fd, buffer, BUFFER_SIZE)))
-		{
-			free(buffer);
+		if (ft_strchr(line, '\n'))
 			break ;
-		}
+		r = read(fd, buffer, BUFFER_SIZE);
+		if ( r == -1 || (r == 0 && buffer[0] == 0))
+			return (free(buffer), buffer = NULL, NULL);
 		buffer[r] = 0;
-		if (!line)
-			line = strdup("");
 		line = strjoin(line, buffer);
-		if (strchr(buffer, '\n'))
-		{
-			ft_memcpy(buffer, strchr(buffer, '\n') + 1, BUFFER_SIZE);
-			break ;
-		}
 	}
 	return (line);
 }
 int main()
 {
-	int fd= open("test.txt", 'r');
-	char	  *buffer=get_next_line(fd);
-	printf("line  %s-----\n", buffer);
-	buffer=get_next_line(fd);
-	printf("line 2 %s----\n", buffer);
-	//buffer=get_next_line(fd);
-	//printf("line 2 %s----\n", buffer);
-	free(buffer);
+	int fd = open("test.txt", 'r');
+	char *line;
+	line = get_next_line(fd);
+	printf("%s--\n", line);
+	free(line);
+	line = get_next_line(fd);
+	printf("%s--\n", line);
+	free(line);
 }

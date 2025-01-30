@@ -1,5 +1,10 @@
-abcd\nabcd\n\0
+abcdefg
 
 
+hx12
 
-abcd\n
+
+klmn
+
+a
+

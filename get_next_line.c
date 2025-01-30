@@ -3,13 +3,14 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
-#define BUFFER_SIZE 40
+#include <limits.h>
+#define BUFFER_SIZE 1
 
 void	*ft_memcpy(char *d, char *s, size_t size)
 {
 	if (!d || !s)
 		return (NULL);
-	while (*s && size--)
+	while (size--)
 		*(d++) = *(s++);
 	*d = 0;
 	return (d);
@@ -46,15 +47,38 @@ char	*strjoin(char *line, char *new_buffer)
 		i++;
 	while (new_buffer[j] && new_buffer[j] != '\n')
 		j++;
-	if (new_buffer[0] == '\n')
+	if (new_buffer[j] == '\n')
 		j++;
 	line = malloc(i + j + 1);
+	if (!line)
+		return (NULL);
 	if (i)
 		ft_memcpy(line, tmp_line, i);
 	free (tmp_line);
 	ft_memcpy(line + i, new_buffer, j);
-	ft_memcpy(new_buffer, new_buffer + j, BUFFER_SIZE);
+	if (ft_strchr(new_buffer, '\n'))
+		ft_memcpy(new_buffer, ft_strchr(new_buffer, '\n') + 1, BUFFER_SIZE - j);
+	else
+		ft_memcpy(new_buffer, new_buffer + j + 1, BUFFER_SIZE - j);
 	return (line);
+}
+
+int	read_file(char **line, char	**buffer, int fd)
+{
+	int	r;
+
+	r = 0;
+	while (1)
+	{
+		if (ft_strchr(*line, '\n'))
+			break ;
+		r = read(fd, *buffer, BUFFER_SIZE);
+		if (!r || r == -1)
+			break ;
+		(*buffer)[r] = 0;
+		*line = strjoin(*line, *buffer);
+	}
+	return (r);
 }
 
 char	*get_next_line(int fd)
@@ -62,38 +86,35 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 	int			r;
+	unsigned int	size;
 
+	size = (unsigned int)BUFFER_SIZE;
 	r = 0;
 	line = NULL;
-	if (buffer)
-		line = strjoin(strdup(""), buffer);
 	if (!buffer)
 	{
-		buffer = malloc((long) BUFFER_SIZE + 1);
+		buffer = malloc(size + 1);
 		if (!buffer)
 			return (NULL);
 		buffer[0] = 0;
 	}
-	while (1)
-	{
-		if (ft_strchr(line, '\n'))
-			break ;
-		r = read(fd, buffer, BUFFER_SIZE);
-		if ( r == -1 || (r == 0 && buffer[0] == 0))
-			return (free(buffer), buffer = NULL, NULL);
-		buffer[r] = 0;
-		line = strjoin(line, buffer);
-	}
+	else if (buffer)
+		line = strjoin(strdup(""), buffer);
+	r = read_file(&line, &buffer, fd);
+	if ((r == 0 && buffer[0] == 0) || r == -1)
+		return (free(buffer), buffer = NULL, line);
 	return (line);
 }
 int main()
 {
 	int fd = open("test.txt", 'r');
 	char *line;
+	line = NULL;
 	line = get_next_line(fd);
-	printf("%s--\n", line);
-	free(line);
-	line = get_next_line(fd);
-	printf("%s--\n", line);
-	free(line);
+	while (line)
+	{
+		printf("%s", line);
+		free(line);
+		line = get_next_line(fd);
+	}	
 }

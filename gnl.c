@@ -116,4 +116,16 @@ char	*get_next_line(int fd)
 		return (free(buffer), buffer = NULL, line);
 	return (line);
 }
-
+int main()
+{
+	int fd = open("test.txt", 'r');
+	char *line;
+	line = NULL;
+	line = get_next_line(fd);
+	while (line)
+	{
+		printf("%s", line);
+		free(line);
+		line = get_next_line(fd);
+	}	
+}

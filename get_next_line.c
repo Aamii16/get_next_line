@@ -10,41 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
-#include <limits.h>
-#define BUFFER_SIZE 1
-
-void	*ft_memcpy(char *d, char *s, size_t size)
-{
-	if (!d || !s)
-		return (NULL);
-	while (size--)
-		*(d++) = *(s++);
-	*d = 0;
-	return (d);
-}
-
-char	*ft_strchr(const char *s, int n)
-{
-	unsigned char	c;
-
-	if (!s)
-		return (NULL);
-	c = (unsigned char)n;
-	while (*s)
-	{
-		if (*s == c)
-			return ((char *)s);
-		s++;
-	}
-	if (c == *s)
-		return ((char *)s);
-	return (NULL);
-}
+#include "get_next_line.h"
 
 char	*strjoin(char *line, char *new_buffer)
 {
@@ -110,10 +76,9 @@ char	*get_next_line(int fd)
 		buffer[0] = 0;
 	}
 	else if (buffer)
-		line = strjoin(strdup(""), buffer);
+		line = strjoin(ft_strdup(""), buffer);
 	r = read_file(&line, &buffer, fd);
 	if ((r == 0 && buffer[0] == 0) || r == -1)
 		return (free(buffer), buffer = NULL, line);
 	return (line);
 }
-

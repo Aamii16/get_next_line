@@ -21,6 +21,8 @@ char	*strjoin(char *line, char *new_buffer)
 	i = 0;
 	j = 0;
 	tmp_line = line;
+	//if (!*new_buffer)
+	//	return (NULL);
 	while (tmp_line && tmp_line[i])
 		i++;
 	while (new_buffer[j] && new_buffer[j] != '\n')
@@ -75,7 +77,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		buffer[0] = 0;
 	}
-	else if (buffer)
+	else if (buffer && *buffer)
 		line = strjoin(ft_strdup(""), buffer);
 	r = read_file(&line, &buffer, fd);
 	if ((r == 0 && buffer[0] == 0) || r == -1)

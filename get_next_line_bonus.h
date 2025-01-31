@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amzahir <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/31 00:41:50 by amzahir           #+#    #+#             */
-/*   Updated: 2025/01/31 00:41:53 by amzahir          ###   ########.fr       */
+/*   Created: 2025/01/31 03:31:12 by amzahir           #+#    #+#             */
+/*   Updated: 2025/01/31 03:31:15 by amzahir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -19,7 +19,11 @@
 # include <fcntl.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
+#  define BUFFER_SIZE 100
+# endif
+
+# ifndef FDS
+#  define FDS 1024
 # endif
 
 void	*ft_memcpy(char *d, char *s, size_t size);

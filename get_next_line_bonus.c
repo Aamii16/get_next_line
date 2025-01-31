@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amzahir <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*join_buffer(char *line, char *new_buffer)
 {
@@ -56,7 +56,7 @@ int	read_file(char **line, char	**buffer, int fd)
 
 char	*get_next_line(int fd)
 {
-	static char		*buffer;
+	static char		*buffer[FDS];
 	char			*line;
 	int				r;
 
@@ -64,17 +64,17 @@ char	*get_next_line(int fd)
 		return (NULL);
 	r = 0;
 	line = NULL;
-	if (!buffer)
+	if (!buffer[fd])
 	{
-		buffer = malloc((size_t)(BUFFER_SIZE) + 1);
-		if (!buffer)
+		buffer[fd] = malloc((size_t)(BUFFER_SIZE) + 1);
+		if (!buffer[fd])
 			return (NULL);
-		buffer[0] = 0;
+		buffer[fd][0] = 0;
 	}
-	else if (buffer && *buffer)
-		line = join_buffer(ft_strdup(""), buffer);
-	r = read_file(&line, &buffer, fd);
-	if ((r == 0 && buffer[0] == 0) || r == -1)
-		return (free(buffer), buffer = NULL, line);
+	else if (buffer[fd] && *(buffer[fd]))
+		line = join_buffer(ft_strdup(""), buffer[fd]);
+	r = read_file(&line, &(buffer[fd]), fd);
+	if ((r == 0 && buffer[fd][0] == 0) || r == -1)
+		return (free(buffer[fd]), buffer[fd] = NULL, line);
 	return (line);
 }

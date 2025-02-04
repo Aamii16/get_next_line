@@ -38,9 +38,9 @@ char	*join_buffer(char *line, char *new_buffer)
 	return (line);
 }
 
-int	read_file(char **line, char	**buffer, int fd)
+ssize_t	read_file(char **line, char	**buffer, int fd)
 {
-	int	r;
+	ssize_t	r;
 
 	r = 0;
 	while (!ft_strchr(*line, '\n'))
@@ -58,7 +58,7 @@ char	*get_next_line(int fd)
 {
 	static char		*buffer[FDS];
 	char			*line;
-	int				r;
+	ssize_t				r;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);

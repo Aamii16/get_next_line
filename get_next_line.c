@@ -6,7 +6,7 @@
 /*   By: amzahir <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 00:06:22 by amzahir           #+#    #+#             */
-/*   Updated: 2025/01/31 00:06:26 by amzahir          ###   ########.fr       */
+/*   Updated: 2025/02/04 23:34:16 by amzahir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ char	*join_buffer(char *line, char *new_buffer)
 	return (line);
 }
 
-int	read_file(char **line, char	**buffer, int fd)
+ssize_t	read_file(char **line, char	**buffer, int fd)
 {
-	int	r;
+	ssize_t	r;
 
 	r = 0;
 	while (!ft_strchr(*line, '\n'))
@@ -58,7 +58,7 @@ char	*get_next_line(int fd)
 {
 	static char		*buffer;
 	char			*line;
-	int				r;
+	ssize_t				r;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);
@@ -77,4 +77,27 @@ char	*get_next_line(int fd)
 	if ((r == 0 && buffer[0] == 0) || r == -1)
 		return (free(buffer), buffer = NULL, line);
 	return (line);
+}
+
+#include <string.h>
+int main()
+{
+	int fd1 = open("test.txt", 'r');
+	//int fd2 = open("bb.txt", 'r');
+
+	char *line;
+
+	while((line = get_next_line(fd1)))
+	{
+		printf("line 1%s", line);
+		free(line);
+	}
+	//line = get_next_line(fd2);
+	//printf("line 2 %s", line);
+
+	//line = get_next_line(fd1);
+	//printf("line 3 %s", line);
+
+	//line = get_next_line(fd2);
+	//printf("line 4%s", line);
 }
